@@ -1,15 +1,22 @@
 # go-dwarves #
 
+[![Build
+Status](https://drone.io/github.com/tchap/go-dwarves/status.png)](https://drone.io/github.com/tchap/go-dwarves/latest)
+[![Coverage
+Status](https://coveralls.io/repos/tchap/go-dwarves/badge.png?branch=master)](https://coveralls.io/r/tchap/go-dwarves?branch=master)
+
 Little dwarves that can be asked politely to perform various tasks.
 With maximum concurrency!
 
 ## Usage ##
 
-TBD
+```go
+import "github.com/tchap/go-dwarves/dwarves"
+```
 
 ## Documentation ###
 
-TBD
+[GoDoc](http://godoc.org/github.com/tchap/go-dwarves/dwarves)
 
 ## Examples ##
 
