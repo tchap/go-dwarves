@@ -24,7 +24,8 @@ This section shows how multiple tasks can be connected with `After`. There are
 also a few container task wrappers - `TaskChain` and `TaskBag` - that can be
 used to group tasks together and make them act as a single logical task.
 
-See the documentation for more complete examples.
+See the documentation for more complete
+[examples](http://godoc.org/github.com/tchap/go-dwarves/dwarves#pkg-examples).
 
 ### Task ###
 
