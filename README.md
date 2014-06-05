@@ -8,11 +8,58 @@ Status](https://coveralls.io/repos/tchap/go-dwarves/badge.png?branch=master)](ht
 Little dwarves that can be asked politely to perform various tasks.
 With maximum concurrency!
 
+## Motivation ##
+
+I started writing a CLI utility that needed to perform multiple independent
+tasks, and I wanted to speed up the utility by running the tasks concurrently
+where possible.
+
+After writing some code and synchronizing the tasks manually by using
+channels where necessary, I thought that it would be handy to come up with a
+general-purpose library that would do the synchronization for me, according to
+the conditions I specify. And this is the result.
+
 ## Usage ##
 
 ```go
 import "github.com/tchap/go-dwarves/dwarves"
 ```
+
+go-dwarves is a tiny task scheduler that is to be used in the following way:
+
+1. Initialise desired `Task` objects.
+2. Optionally specify certain (partial) ordering using `Task.After`. Calling
+   `taskB.After(taskA)` means that `taskB` will run only after `taskA` has
+   finished executing.
+3. Optionally specify what tasks use what resources by calling `Task.Uses`.
+   No two tasks using the same resource will be run at the same time.
+4. Initialise a `Supervisor` with the list of tasks to be run. The downstream
+   tasks will be triggered automatically, i.e. when `taskB.After(taskA)` is
+   called, it is enough to list `taskA` since `taskB` will be added
+   automatically.
+5. Start the whole thing by calling `Supervisor.DispatchDwarves`.
+
+Once the supervisor is started, it can be interrupted by calling
+`Supervisor.WithdrawDwarves`. This means that the supervisor will wait until the
+currently running tasks are finished, but it will not start any new tasks. A
+channel is passed to the task functions that is closed when `WithdrawDwarves` is
+called. The tasks can try to exit as soon as possible.
+
+There is also one extra feature that is orthogonal to the rest. The supervisor
+can be asked to perform a rollback, which is supposed to revert all
+the changes that happened during the task execution. The rollback function can
+be specified for every task by using `Task.RevertChangesWith`. The supervisor
+then simply calls these function in the inverted order compared to the order the
+tasks were started.
+
+### Error Handling ###
+
+The errors from the task functions and the task rollback functions are returned
+over a channel that can be passed to `Supervisor.DispatchDwarves` and
+`Supervisor.RevertChanges`. For this reason these methods are a bit against the
+good practices since they do not block until the tasks are finished. Use
+`Supervisor.DwarvesFinished`, `Supervisor.WaitFinished`,
+`Supervisor.ChangesReverted` or `Supervisor.WaitReverted`.
 
 ## Documentation ###
 
@@ -102,8 +149,9 @@ task := dwarves.NewTask(func(interruptCh <-chan struct{}) error {
 })
 
 supervisor := dwarves.NewSupervisor(task)
-supervisor.DispatchDwarves()
-supervisor.RevertChanges()
+supervisor.DispatchDwarves(nil)
+supervisor.RevertChanges(nil)
+supervusor.WaitChangesReverted()
 // Output:
 // task A
 // task A reverted
