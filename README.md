@@ -19,6 +19,12 @@ channels where necessary, I thought that it would be handy to come up with a
 general-purpose library that would do the synchronization for me, according to
 the conditions I specify. And this is the result.
 
+## Status ##
+
+I am still working on this, the API may still change.
+
+Also some code comments need to be added so that GoDoc is not so empty.
+
 ## Usage ##
 
 ```go
@@ -160,3 +166,7 @@ supervusor.WaitChangesReverted()
 ## License ##
 
 MIT, see the `LICENSE` file.
+
+## The Original Author ##
+
+[tchap](https://github.com/tchap)
